@@ -6,4 +6,10 @@
 //  Copyright © 2016年 simorgh. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+
+class KeyboardNotification {
+    
+    
+}

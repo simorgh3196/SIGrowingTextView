@@ -9,38 +9,27 @@
 import UIKit
 
 
+// MARK: - GrowingTextBar -
+
 public class GrowingTextBar: UIView {
     
     
     // MARK: Property
     
     public var textView: GrowingTextView!
-    let defaultHeight = CGFloat(44)
     
-    public var leftView: UIView? {
-        willSet {
-            if let view = leftView where newValue == nil {
-                view.removeFromSuperview()
-            }
-        }
-        didSet {
-            if let view = leftView {
-                addSubview(view)
-            }
-        }
+    private let defaultHeight: CGFloat = 44
+    private var leftView: UIView!
+    private var rightView: UIView!
+    private var leftViewWidthConstraint: NSLayoutConstraint!
+    private var rightViewWidthConstraint: NSLayoutConstraint!
+    
+    private var leftViewHidden: Bool = false {
+        didSet { leftViewWidthConstraint.constant = rightViewHidden ? 0 : 40 }
     }
     
-    public var rightView: UIView? {
-        willSet {
-            if let view = rightView where newValue == nil {
-                view.removeFromSuperview()
-            }
-        }
-        didSet {
-            if let view = rightView {
-                addSubview(view)
-            }
-        }
+    private var rightViewHidden: Bool = true {
+        didSet { rightViewWidthConstraint.constant = rightViewHidden ? 0 : 40 }
     }
     
     
@@ -49,6 +38,7 @@ public class GrowingTextBar: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
+        backgroundColor = UIColor(white: 0.7, alpha: 1)
     }
     
     required public init?(coder aDecoder: NSCoder) {
@@ -57,50 +47,79 @@ public class GrowingTextBar: UIView {
     }
     
     private func commonInit() {
+        
+        configureViews()
+        updateAutolayout()
+    }
+    
+    
+    // MARK: Method
+    
+    public func addSubViewToLeftView(view: UIView) {
+        
+    }
+    
+    private func configureViews() {
+        
         textView = GrowingTextView()
         textView.textViewDelegate = self
         textView.placeholder = "This is GrowingTextView"
         textView.maxNumberOfLines = 4
         addSubview(textView)
-        setAutolayout()
-    }
-    
-    
-    // 
-    
-    private func setAutolayout() {
+        
+        leftView = UIView()
+        leftView.backgroundColor = UIColor.blueColor()
+        addSubview(leftView)
+        
+        rightView = UIView()
+        rightView.backgroundColor = UIColor.blueColor()
+        addSubview(rightView)
         
         textView.translatesAutoresizingMaskIntoConstraints = false
-        
-        addConstraints([
-            Constraint.new(textView, .Top, to: self, .Top, constant: 7),
-            Constraint.new(self, .Bottom, to: textView, .Bottom, constant: 7),
-            Constraint.new(textView, .Left, to: self, .Left, constant: 16),
-            Constraint.new(self, .Right, to: textView, .Right, constant: 16),
-            ])
+        leftView.translatesAutoresizingMaskIntoConstraints = false
+        rightView.translatesAutoresizingMaskIntoConstraints = false
     }
     
-    public func updateViews(animated: Bool) {
-        if animated {
-            UIView.animateWithDuration(0.2) {
-                self.setNeedsLayout()
-                self.layoutIfNeeded()
-            }
+    private func updateAutolayout() {
+        
+        leftViewWidthConstraint = Constraint.new(leftView, .Width, to: nil, .Width, constant: 40)
+        rightViewWidthConstraint = Constraint.new(rightView, .Width, to: nil, .Width, constant: 0)
+        
+        addConstraints([leftViewWidthConstraint, rightViewWidthConstraint])
+        addConstraints(
+            Constraint.new(
+                visualFormats: [
+                    "V:|-7-[textView]-7-|",
+                    "V:|-(>=4)-[leftView(36)]-4-|",
+                    "V:|-(>=4)-[rightView(36)]-4-|",
+                    "|-4-[leftView]-4-[textView]-4-[rightView]-4-|",
+                ], views: ["textView" : textView, "leftView" : leftView, "rightView" : rightView])
+        )
+    }
+    
+    private func updateLayout(duration duration: NSTimeInterval?) {
+        
+        if let duration = duration {
+            UIView.animateWithDuration(duration, delay: 0, options: .CurveEaseInOut, animations: { [weak self] in
+                self?.setNeedsLayout()
+                self?.layoutIfNeeded()
+                }, completion: nil)
         } else {
             setNeedsLayout()
             layoutIfNeeded()
         }
     }
-
 }
 
+
+// MARK: - :GrowingTextViewDelegate -
 
 extension GrowingTextBar: GrowingTextViewDelegate {
     
     public func textViewHeightChanged(textView: GrowingTextView, newHeight: CGFloat) {
         
         let padding = defaultHeight - textView.minimumHeight
-        let height = newHeight + 14//padding + newHeight
+        let height = padding + newHeight
         
         for constraint in constraints {
             if constraint.firstAttribute == .Height && constraint.firstItem as? NSObject == self {
@@ -109,10 +128,9 @@ extension GrowingTextBar: GrowingTextViewDelegate {
         }
     }
     
-    
     public func textViewDidChange(textView: GrowingTextView) {
         
-        updateViews(true)
+        rightViewHidden = textView.text.isEmpty
+        updateLayout(duration: 0.2)
     }
-    
 }

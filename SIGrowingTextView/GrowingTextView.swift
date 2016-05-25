@@ -9,7 +9,7 @@
 import UIKit
 
 
-// MARK: - GrowingTextViewDelegate
+// MARK: - GrowingTextViewDelegate -
 
 @objc
 public protocol GrowingTextViewDelegate: NSObjectProtocol {
@@ -42,7 +42,7 @@ public protocol GrowingTextViewDelegate: NSObjectProtocol {
 }
 
 
-// MARK: - GrowingTextView
+// MARK: - GrowingTextView -
 
 @IBDesignable
 public class GrowingTextView: UITextView {
@@ -63,7 +63,7 @@ public class GrowingTextView: UITextView {
         didSet { layer.borderColor = borderColor.CGColor }
     }
 
-    @IBInspectable public var placeholder: String? {
+    @IBInspectable public var placeholder: String = "" {
         didSet { placeholderLabel.text = placeholder }
     }
     
@@ -86,7 +86,7 @@ public class GrowingTextView: UITextView {
     public var expectedHeight: CGFloat = 0
     public var minimumHeight: CGFloat {
         font = font ?? UIFont.systemFontOfSize(14)
-        return ceil(font!.lineHeight) + textContainerInset.top + textContainerInset.bottom
+        return font!.lineHeight + textContainerInset.top + textContainerInset.bottom
     }
     
     private lazy var placeholderLabel: UILabel = { [weak self] in
@@ -124,7 +124,7 @@ public class GrowingTextView: UITextView {
         delegate = self
         clipsToBounds = true
         scrollEnabled = false
-        textContainerInset = UIEdgeInsets(top: 8, left: 6, bottom: 8, right:6)
+        textContainerInset = UIEdgeInsets(top: 6, left: 6, bottom: 6, right:6)
         layer.cornerRadius = cornerRadius
         layer.borderWidth = borderWidth
         layer.borderColor = borderColor.CGColor
@@ -153,7 +153,7 @@ public class GrowingTextView: UITextView {
         if maxNumberOfLines > 0 {
             font = font ?? UIFont.systemFontOfSize(14)
             maxHeight
-                = (ceil(font!.lineHeight) * CGFloat(maxNumberOfLines))
+                = font!.lineHeight * CGFloat(maxNumberOfLines)
                 + textContainerInset.top
                 + textContainerInset.bottom
         }
@@ -168,7 +168,6 @@ public class GrowingTextView: UITextView {
         }
         
         textViewDelegate?.textViewHeightChanged?(self, newHeight: expectedHeight)
-        ensureCaretDisplaysCorrectly()
     }
     
     /**
@@ -181,25 +180,16 @@ public class GrowingTextView: UITextView {
             let boundingSize = CGSize(width: frame.size.width, height: CGFloat.max)
             let attr = NSAttributedString(string: text, attributes: [NSFontAttributeName: font])
             let size = attr.boundingRectWithSize(boundingSize, options: .UsesLineFragmentOrigin, context: nil)
-            newHeight = ceil(size.height)
+            newHeight = size.height
         }
         
         return newHeight + textContainerInset.top + textContainerInset.bottom
     }
     
-    private func ensureCaretDisplaysCorrectly() {
-        
-        guard let range = selectedTextRange else { return }
-        let rect = caretRectForPosition(range.end)
-        UIView.performWithoutAnimation({ [weak self] in
-            self?.scrollRectToVisible(rect, animated: false)
-        })
+    private func shouldHidePlaceholder() -> Bool {
+        return placeholder.isEmpty || !text.isEmpty
     }
     
-    private func shouldHidePlaceholder() -> Bool {
-        return placeholder?.characters.count == 0 || text.characters.count > 0
-    }
-
     /**
      Layout the placeholder label to fit in the rect specified
      
@@ -219,55 +209,37 @@ public class GrowingTextView: UITextView {
 }
 
 
-// MARK: - :UITextViewDelegate
+// MARK: - :UITextViewDelegate -
 
 extension GrowingTextView: UITextViewDelegate {
     
     public func textViewShouldBeginEditing(textView: UITextView) -> Bool {
-        print(#function, "text:", textView.text)
         return textViewDelegate?.textViewShouldBeginEditing?(self) ?? true
     }
     
     public func textViewShouldEndEditing(textView: UITextView) -> Bool {
-        print(#function, "text:", textView.text)
         return textViewDelegate?.textViewShouldEndEditing?(self) ?? true
     }
     
     public func textViewDidBeginEditing(textView: UITextView) {
-        print(#function, "text:", textView.text)
         textViewDelegate?.textViewDidBeginEditing?(self)
     }
     
     public func textViewDidEndEditing(textView: UITextView) {
-        print(#function, "text:", textView.text)
         textViewDelegate?.textViewDidEndEditing?(self)
     }
     
     public func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
-        print(#function, "range:", range, "text:", text)
-//        updateSize()
-        var shouldChange = true
-        if text == "\n" {
-            if let change = textViewDelegate?.textViewShouldReturn?(self) {
-                shouldChange = change
-            }
-        }
-        if text.isEmpty {
-            ensureCaretDisplaysCorrectly()
-        }
-        
-        return shouldChange
+        return textViewDelegate?.textView?(self, shouldChangeTextInRange: range, replacementText: text) ?? true
     }
 
     public func textViewDidChange(textView: UITextView) {
-        print(#function, "text:", textView.text)
         updateSize()
         placeholderLabel.hidden = shouldHidePlaceholder()
         textViewDelegate?.textViewDidChange?(self)
     }
     
     public func textViewDidChangeSelection(textView: UITextView) {
-        print(#function, "text:", textView.text)
         textViewDelegate?.textViewDidChangeSelection?(self)
     }
     
@@ -276,7 +248,6 @@ extension GrowingTextView: UITextViewDelegate {
     }
     
     public func textView(textView: UITextView, shouldInteractWithTextAttachment textAttachment: NSTextAttachment, inRange characterRange: NSRange) -> Bool {
-        print(#function, "text:", textView.text)
         return textViewDelegate?.textView?(self, shouldInteractWithTextAttachment: textAttachment, inRange: characterRange) ?? true
     }
 }

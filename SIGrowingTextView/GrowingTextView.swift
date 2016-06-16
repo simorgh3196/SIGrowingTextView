@@ -1,10 +1,26 @@
+/////////////////////////////////////////////////////////////////////////////////
+// The MIT License (MIT)
 //
-//  GrowingTextView.swift
-//  SIGrowingTextView
+// Copyright (c) 2016 TomoyaHayakawa(@Sim_progra).
 //
-//  Created by 早川智也 on 2016/05/21.
-//  Copyright © 2016年 simorgh. All rights reserved.
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
 //
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+/////////////////////////////////////////////////////////////////////////////////
 
 import UIKit
 
@@ -104,7 +120,7 @@ public class GrowingTextView: UITextView {
     }()
     
     
-    // MARK: Initializer
+    // MARK: Lifecycle
     
     public convenience init() {
         self.init(frame: CGRectZero, textContainer: nil)
@@ -130,9 +146,6 @@ public class GrowingTextView: UITextView {
         layer.borderColor = borderColor.CGColor
     }
     
-    
-    // MARK: Method
-    
     override public func layoutSubviews() {
         super.layoutSubviews()
         
@@ -143,9 +156,9 @@ public class GrowingTextView: UITextView {
         }
     }
     
-    /**
-     Notify the delegate of size changes if necessary
-     */
+    
+    // MARK: Method
+    
     private func updateSize() {
         
         var maxHeight = CGFloat.max
@@ -170,9 +183,6 @@ public class GrowingTextView: UITextView {
         textViewDelegate?.textViewHeightChanged?(self, newHeight: expectedHeight)
     }
     
-    /**
-     Calculates the correct height for the text currently in the textview as we cannot rely on contentsize to do the right thing
-     */
     private func roundHeight() -> CGFloat {
         var newHeight: CGFloat = 0
         
@@ -190,12 +200,6 @@ public class GrowingTextView: UITextView {
         return placeholder.isEmpty || !text.isEmpty
     }
     
-    /**
-     Layout the placeholder label to fit in the rect specified
-     
-     - parameter rect: The constrained size in which to fit the label
-     - returns: The placeholder label frame
-     */
     private func placeholderRectThatFits(rect: CGRect) -> CGRect {
         
         let size =  placeholderLabel.sizeThatFits(rect.size)

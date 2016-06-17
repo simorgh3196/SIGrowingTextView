@@ -25,6 +25,7 @@
 import UIKit
 import SIGrowingTextView
 
+
 class ViewController: UIViewController {
 
     @IBOutlet weak var growingTextBar: GrowingTextBar!

@@ -162,12 +162,6 @@ public class GrowingTextBar: UIView {
                 heightConstraint = constraint
                 defaultHeight = defaultHeight ?? constraint.constant
             }
-            
-            if constraint.firstAttribute == .Bottom
-                && constraint.relation == .Equal
-                && constraint.firstItem as? NSObject == self {
-                bottomConstraint = constraint
-            }
         }
     }
     
@@ -224,7 +218,7 @@ public class GrowingTextBar: UIView {
     }
     
     
-    // MARK: Public Method
+    // MARK: Private Method
     
     private func configureViews() {
         

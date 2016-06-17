@@ -47,9 +47,6 @@ class ViewController: UIViewController {
         rightButton.addTarget(self, action: #selector(tappedButton(_:)), forControlEvents: .TouchUpInside)
         growingTextBar.addSubviewToRightView(rightButton, alwaysShow: true)
         
-        growingTextBar.textView.placeholder = "This is GrowingTextView"
-        
-        
         keyboard.observe { [weak self] (event) -> Void in
             guard let s = self else { return }
             switch event.type {

@@ -60,30 +60,29 @@ public protocol GrowingTextViewDelegate: NSObjectProtocol {
 
 // MARK: - GrowingTextView -
 
-@IBDesignable
 public class GrowingTextView: UITextView {
     
     // MARK: IBInspectable
     
-    @IBInspectable public var maxNumberOfLines: Int = 0
+    public var maxNumberOfLines: Int = 0
     
-    @IBInspectable public var cornerRadius: CGFloat = 3 {
+    public var cornerRadius: CGFloat = 3 {
         didSet { layer.cornerRadius = cornerRadius }
     }
     
-    @IBInspectable public var borderWidth: CGFloat = 0.25 {
+    public var borderWidth: CGFloat = 0.25 {
         didSet { layer.borderWidth = borderWidth }
     }
     
-    @IBInspectable public var borderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
+    public var borderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
         didSet { layer.borderColor = borderColor.CGColor }
     }
 
-    @IBInspectable public var placeholder: String = "" {
+    public var placeholder: String = "" {
         didSet { placeholderLabel.text = placeholder }
     }
     
-    @IBInspectable public var placeholderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
+    public var placeholderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
         didSet { placeholderLabel.textColor = placeholderColor }
     }
     
@@ -99,10 +98,13 @@ public class GrowingTextView: UITextView {
     }
     
     public weak var textViewDelegate: GrowingTextViewDelegate?
-    public var expectedHeight: CGFloat = 0
+    private var expectedHeight: CGFloat = 0
     public var minimumHeight: CGFloat {
-        font = font ?? UIFont.systemFontOfSize(14)
-        return font!.lineHeight + textContainerInset.top + textContainerInset.bottom
+        get {
+            font = font ?? UIFont.systemFontOfSize(14)
+            return font!.lineHeight + textContainerInset.top + textContainerInset.bottom
+        }
+        set { self.minimumHeight = newValue }
     }
     
     private lazy var placeholderLabel: UILabel = { [weak self] in
@@ -141,6 +143,7 @@ public class GrowingTextView: UITextView {
         clipsToBounds = true
         scrollEnabled = false
         textContainerInset = UIEdgeInsets(top: 6, left: 6, bottom: 6, right:6)
+        font = UIFont.systemFontOfSize(14)
         layer.cornerRadius = cornerRadius
         layer.borderWidth = borderWidth
         layer.borderColor = borderColor.CGColor

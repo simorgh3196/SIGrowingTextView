@@ -21,19 +21,86 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 /////////////////////////////////////////////////////////////////////////////////
+
 import UIKit
 
 
 // MARK: - GrowingTextBar -
 
+@IBDesignable
 public class GrowingTextBar: UIView {
     
+    // MARK: IBInspectable Property
+    
+    // TextView maxNumberOfLines
+    @IBInspectable public var maxNumberOfLines: Int = 0 {
+        didSet {
+            textView.maxNumberOfLines = maxNumberOfLines
+        }
+    }
+    
+    // TextView text
+    @IBInspectable public var text: String = "" {
+        didSet {
+            textView.text = text
+        }
+    }
+    
+    // TextView text color
+    @IBInspectable public var textColor: UIColor = UIColor.darkTextColor() {
+        didSet {
+            textView.textColor = textColor
+        }
+    }
+    
+    // TextView corner radius
+    @IBInspectable public var textViewCornerRadius: CGFloat = 3 {
+        didSet {
+            textView.cornerRadius = textViewCornerRadius
+        }
+    }
+    
+    // TextView border width
+    @IBInspectable public var textViewBorderWidth: CGFloat = 0.25 {
+        didSet {
+            textView.borderWidth = textViewBorderWidth
+        }
+    }
+    
+    // TextView border color
+    @IBInspectable public var textViewBorderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
+        didSet {
+            textView.borderColor = textViewBorderColor
+        }
+    }
+    
+    /// The text that appears as a placeholder when the text view is empty
+    @IBInspectable public var placeholder: String = "" {
+        didSet {
+            textView.placeholder = placeholder
+        }
+    }
+    
+    /// The color of the placeholder text
+    @IBInspectable public var placeholderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
+        didSet {
+            textView.placeholderColor = placeholderColor
+        }
+    }
+    
+    /// The font of the textView text and placeholder text
+    @IBInspectable public var font: UIFont = UIFont.systemFontOfSize(14) {
+        didSet {
+            textView.font = font
+        }
+    }
+
     
     // MARK: Property
     
     public var textView: GrowingTextView!
     
-    private let defaultHeight: CGFloat = 44
+    private var defaultHeight: CGFloat?
     private var sideViewMargin: CGFloat = 4
     
     private var leftView: UIView!
@@ -44,6 +111,7 @@ public class GrowingTextBar: UIView {
     private var leftViewWidthConstraint: NSLayoutConstraint!
     private var rightViewWidthConstraint: NSLayoutConstraint!
     private var heightConstraint: NSLayoutConstraint?
+    private var bottomConstraint: NSLayoutConstraint?
     
     public var leftViewHidden: Bool = false {
         didSet {
@@ -84,7 +152,6 @@ public class GrowingTextBar: UIView {
         leftViewSize = CGSize(width: 40, height: 36)
         rightViewSize = CGSize(width: 40, height: 36)
         configureViews()
-        updateAutolayout()
     }
     
     public override func layoutSubviews() {
@@ -93,14 +160,21 @@ public class GrowingTextBar: UIView {
         for constraint in constraints {
             if constraint.firstAttribute == .Height && constraint.firstItem as? NSObject == self {
                 heightConstraint = constraint
+                defaultHeight = defaultHeight ?? constraint.constant
+            }
+            
+            if constraint.firstAttribute == .Bottom
+                && constraint.relation == .Equal
+                && constraint.firstItem as? NSObject == self {
+                bottomConstraint = constraint
             }
         }
     }
     
     
-    // MARK: Method
+    // MARK: Public Method
     
-    public func addSubviewToLeftView(_ view: UIView) {
+    public func addSubviewToLeftView(view: UIView) {
         
         leftView.subviews.forEach({ $0.removeFromSuperview() })
         
@@ -118,7 +192,7 @@ public class GrowingTextBar: UIView {
         updateLayout(duration: nil)
     }
     
-    public func addSubviewToRightView(_ view: UIView, alwaysShow: Bool) {
+    public func addSubviewToRightView(view: UIView, alwaysShow: Bool) {
         
         rightView.subviews.forEach({ $0.removeFromSuperview() })
         
@@ -149,11 +223,13 @@ public class GrowingTextBar: UIView {
         }
     }
     
+    
+    // MARK: Public Method
+    
     private func configureViews() {
         
         textView = GrowingTextView()
         textView.textViewDelegate = self
-        textView.maxNumberOfLines = 4
         addSubview(textView)
         
         leftView = UIView()
@@ -167,9 +243,6 @@ public class GrowingTextBar: UIView {
         textView.translatesAutoresizingMaskIntoConstraints = false
         leftView.translatesAutoresizingMaskIntoConstraints = false
         rightView.translatesAutoresizingMaskIntoConstraints = false
-    }
-    
-    private func updateAutolayout() {
         
         leftViewWidthConstraint = Constraint.new(leftView, .Width, to: nil, .Width, constant: leftViewSize.width)
         rightViewWidthConstraint = Constraint.new(rightView, .Width, to: nil, .Width, constant: 0)
@@ -179,15 +252,12 @@ public class GrowingTextBar: UIView {
             rightViewWidthConstraint,
             ])
         
-        addConstraints(
-            Constraint.new(
-                visualFormats: [
-                    "V:|-7-[textView]-7-|",
-                    "V:|-(>=4)-[leftView(36)]-4-|",
-                    "V:|-(>=4)-[rightView(36)]-4-|",
-                    "|-4-[leftView]-4-[textView]-4-[rightView]-4-|",
-                ], views: ["textView" : textView, "leftView" : leftView, "rightView" : rightView])
-        )
+        addConstraints(Constraint.new(visualFormats: [
+            "V:|-7-[textView]-7-|",
+            "V:|-(>=4)-[leftView(36)]-4-|",
+            "V:|-(>=4)-[rightView(36)]-4-|",
+            "|-4-[leftView]-4-[textView]-4-[rightView]-4-|",
+            ], views: ["textView" : textView, "leftView" : leftView, "rightView" : rightView]))
     }
     
 }
@@ -199,6 +269,7 @@ extension GrowingTextBar: GrowingTextViewDelegate {
     
     public func textViewHeightChanged(textView: GrowingTextView, newHeight: CGFloat) {
         
+        guard let defaultHeight = defaultHeight else { return }
         let padding = defaultHeight - textView.minimumHeight
         let height = padding + newHeight
         heightConstraint?.constant = height < defaultHeight ? defaultHeight : height

@@ -25,7 +25,7 @@
 import UIKit
 
 
-internal struct Constraint {
+internal final class Constraint: NSLayoutConstraint {
     static func new(
         item: AnyObject
         , _ attr: NSLayoutAttribute

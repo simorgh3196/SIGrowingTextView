@@ -30,6 +30,8 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var growingTextBar: GrowingTextBar!
     @IBOutlet weak var growingViewBottomConstraint: NSLayoutConstraint!
+    private var growingTextBar2: GrowingTextBar!
+    private var growingViewBottomConstraint2: NSLayoutConstraint!
     private let keyboard = KeyboardObserver()
     
     override func viewDidLoad() {
@@ -47,6 +49,9 @@ class ViewController: UIViewController {
         rightButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
         rightButton.addTarget(self, action: #selector(tappedButton(_:)), forControlEvents: .TouchUpInside)
         growingTextBar.addSubviewToRightView(rightButton, alwaysShow: true)
+        
+        
+        growingTextBar2 = GrowingTextBar()
         
         keyboard.observe { [weak self] (event) -> Void in
             guard let s = self else { return }

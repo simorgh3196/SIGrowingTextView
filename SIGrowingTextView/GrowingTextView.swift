@@ -62,8 +62,6 @@ public protocol GrowingTextViewDelegate: NSObjectProtocol {
 
 public class GrowingTextView: UITextView {
     
-    // MARK: IBInspectable
-    
     public var maxNumberOfLines: Int = 0
     
     public var cornerRadius: CGFloat = 3 {

@@ -31,68 +31,63 @@ import UIKit
 public class GrowingTextBar: UIView {
     
     // MARK: IBInspectable Property
+    // convenience propaties for IBInspectable
     
     // TextView maxNumberOfLines
-    @IBInspectable public var maxNumberOfLines: Int = 0 {
-        didSet {
-            textView.maxNumberOfLines = maxNumberOfLines
-        }
+    @IBInspectable public var maxNumberOfLines: Int {
+        get { return textView.maxNumberOfLines }
+        set { textView.maxNumberOfLines = newValue }
     }
     
     // TextView text
-    @IBInspectable public var text: String = "" {
-        didSet {
-            textView.text = text
+    @IBInspectable public var text: String {
+        get { return textView.text }
+        set {
+            textView.text = newValue
+            rightViewHidden = textView.text.isEmpty
         }
     }
     
     // TextView text color
-    @IBInspectable public var textColor: UIColor = UIColor.darkTextColor() {
-        didSet {
-            textView.textColor = textColor
-        }
+    @IBInspectable public var textColor: UIColor? {
+        get { return textView.textColor }
+        set { textView.textColor = newValue }
     }
     
     // TextView corner radius
-    @IBInspectable public var textViewCornerRadius: CGFloat = 3 {
-        didSet {
-            textView.cornerRadius = textViewCornerRadius
-        }
+    @IBInspectable public var textViewCornerRadius: CGFloat {
+        get { return textView.cornerRadius }
+        set { textView.cornerRadius = newValue }
     }
     
     // TextView border width
-    @IBInspectable public var textViewBorderWidth: CGFloat = 0.25 {
-        didSet {
-            textView.borderWidth = textViewBorderWidth
-        }
+    @IBInspectable public var textViewBorderWidth: CGFloat {
+        get { return textView.borderWidth }
+        set { textView.borderWidth = textViewBorderWidth }
     }
     
     // TextView border color
-    @IBInspectable public var textViewBorderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
-        didSet {
-            textView.borderColor = textViewBorderColor
-        }
+    @IBInspectable public var textViewBorderColor: UIColor {
+        get { return textView.borderColor }
+        set { textView.borderColor = newValue }
     }
     
     /// The text that appears as a placeholder when the text view is empty
-    @IBInspectable public var placeholder: String = "" {
-        didSet {
-            textView.placeholder = placeholder
-        }
+    @IBInspectable public var placeholder: String {
+        get { return textView.placeholder }
+        set { textView.placeholder = newValue }
     }
     
     /// The color of the placeholder text
-    @IBInspectable public var placeholderColor: UIColor = UIColor(white: 0.7, alpha: 1) {
-        didSet {
-            textView.placeholderColor = placeholderColor
-        }
+    @IBInspectable public var placeholderColor: UIColor {
+        get { return textView.placeholderColor }
+        set { textView.placeholderColor = newValue }
     }
     
     /// The font of the textView text and placeholder text
-    @IBInspectable public var font: UIFont = UIFont.systemFontOfSize(14) {
-        didSet {
-            textView.font = font
-        }
+    @IBInspectable public var font: UIFont? {
+        get { return textView.font }
+        set { textView.font = newValue }
     }
 
     
@@ -162,9 +157,12 @@ public class GrowingTextBar: UIView {
         super.layoutSubviews()
         
         for constraint in constraints {
+            print(constraint)
             if constraint.firstAttribute == .Height && constraint.firstItem as? NSObject == self {
+                print("ok")
                 heightConstraint = constraint
                 defaultHeight = defaultHeight ?? constraint.constant
+                break
             }
         }
     }

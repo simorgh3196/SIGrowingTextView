@@ -87,6 +87,10 @@ public class GrowingTextView: UITextView {
     
     // MARK: Property
     
+    override public var text: String! {
+        didSet { updatePlaceholderHideState() }
+    }
+    
     override public var font: UIFont? {
         didSet { placeholderLabel.font = font }
     }
@@ -150,7 +154,7 @@ public class GrowingTextView: UITextView {
     override public func layoutSubviews() {
         super.layoutSubviews()
         
-        placeholderLabel.hidden = shouldHidePlaceholder()
+        updatePlaceholderHideState()
         if !placeholderLabel.hidden {
             placeholderLabel.frame = placeholderRectThatFits(bounds)
             sendSubviewToBack(placeholderLabel)
@@ -197,8 +201,8 @@ public class GrowingTextView: UITextView {
         return newHeight + textContainerInset.top + textContainerInset.bottom
     }
     
-    private func shouldHidePlaceholder() -> Bool {
-        return placeholder.isEmpty || !text.isEmpty
+    internal func updatePlaceholderHideState() {
+        placeholderLabel.hidden = placeholder.isEmpty || !text.isEmpty
     }
     
     private func placeholderRectThatFits(rect: CGRect) -> CGRect {
@@ -240,7 +244,7 @@ extension GrowingTextView: UITextViewDelegate {
 
     public func textViewDidChange(textView: UITextView) {
         updateSize()
-        placeholderLabel.hidden = shouldHidePlaceholder()
+        updatePlaceholderHideState()
         textViewDelegate?.textViewDidChange?(self)
     }
     

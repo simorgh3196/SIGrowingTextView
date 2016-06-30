@@ -13,6 +13,7 @@
 		F4227ACD1CF09527008BE15F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4227ACC1CF09527008BE15F /* Assets.xcassets */; };
 		F4227AD01CF09527008BE15F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F4227ACE1CF09527008BE15F /* LaunchScreen.storyboard */; };
 		F4227AE71CF0AACC008BE15F /* SIGrowingTextView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4227AE61CF0AAAC008BE15F /* SIGrowingTextView.framework */; };
+		F45177181D1584C200AE61F0 /* Constraint.swift in Sources */ = {isa = PBXBuildFile; fileRef = F45177171D1584C200AE61F0 /* Constraint.swift */; };
 		F4BF94DE1D126786005F6188 /* Keyboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4BF94DD1D126786005F6188 /* Keyboard.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		F4227ACF1CF09527008BE15F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F4227AD11CF09527008BE15F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F4227AE11CF0AAAC008BE15F /* SIGrowingTextView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SIGrowingTextView.xcodeproj; path = ../SIGrowingTextView.xcodeproj; sourceTree = "<group>"; };
+		F45177171D1584C200AE61F0 /* Constraint.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constraint.swift; sourceTree = "<group>"; };
 		F4BF94DD1D126786005F6188 /* Keyboard.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keyboard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -74,6 +76,7 @@
 				F4227AC71CF09527008BE15F /* ViewController.swift */,
 				F4227AC91CF09527008BE15F /* Main.storyboard */,
 				F4BF94DD1D126786005F6188 /* Keyboard.swift */,
+				F45177171D1584C200AE61F0 /* Constraint.swift */,
 				F4227ACC1CF09527008BE15F /* Assets.xcassets */,
 				F4227ACE1CF09527008BE15F /* LaunchScreen.storyboard */,
 				F4227AD11CF09527008BE15F /* Info.plist */,
@@ -176,6 +179,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F45177181D1584C200AE61F0 /* Constraint.swift in Sources */,
 				F4BF94DE1D126786005F6188 /* Keyboard.swift in Sources */,
 				F4227AC81CF09527008BE15F /* ViewController.swift in Sources */,
 				F4227AC61CF09527008BE15F /* AppDelegate.swift in Sources */,

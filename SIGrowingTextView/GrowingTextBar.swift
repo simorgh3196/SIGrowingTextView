@@ -89,6 +89,26 @@ public class GrowingTextBar: UIView {
         get { return textView.font }
         set { textView.font = newValue }
     }
+    
+    public var leftViewHidden: Bool = false {
+        didSet {
+            if leftViewHidden {
+                leftViewWidthConstraint.constant = 0
+            } else {
+                leftViewWidthConstraint.constant = leftViewSize.width + sideViewMargin * 2
+            }
+        }
+    }
+    
+    public var rightViewHidden: Bool = true {
+        didSet {
+            if rightViewHidden {
+                rightViewWidthConstraint.constant = 0
+            } else {
+                rightViewWidthConstraint.constant = rightViewSize.width + sideViewMargin * 2
+            }
+        }
+    }
 
     
     // MARK: Property
@@ -107,26 +127,6 @@ public class GrowingTextBar: UIView {
     private var rightViewWidthConstraint: NSLayoutConstraint!
     private var heightConstraint: NSLayoutConstraint?
     private var bottomConstraint: NSLayoutConstraint?
-    
-    public var leftViewHidden: Bool = false {
-        didSet {
-            if leftViewHidden {
-                leftViewWidthConstraint.constant = 0
-            } else {
-                leftViewWidthConstraint.constant = leftViewSize.width + sideViewMargin*2
-            }
-        }
-    }
-    
-    public var rightViewHidden: Bool = true {
-        didSet {
-            if rightViewHidden {
-                rightViewWidthConstraint.constant = 0
-            } else {
-                rightViewWidthConstraint.constant = rightViewSize.width + sideViewMargin*2
-            }
-        }
-    }
     
     
     // MARK: Lifecycle
@@ -147,7 +147,6 @@ public class GrowingTextBar: UIView {
     }
     
     private func commonInit() {
-        
         leftViewSize = CGSize(width: 40, height: 36)
         rightViewSize = CGSize(width: 40, height: 36)
         configureViews()
@@ -157,9 +156,7 @@ public class GrowingTextBar: UIView {
         super.layoutSubviews()
         
         for constraint in constraints {
-            print(constraint)
             if constraint.firstAttribute == .Height && constraint.firstItem as? NSObject == self {
-                print("ok")
                 heightConstraint = constraint
                 defaultHeight = defaultHeight ?? constraint.constant
                 break
@@ -171,14 +168,13 @@ public class GrowingTextBar: UIView {
     // MARK: Public Method
     
     public func addSubviewToLeftView(view: UIView) {
-        
         leftView.subviews.forEach({ $0.removeFromSuperview() })
-        
-        view.translatesAutoresizingMaskIntoConstraints = false
         
         leftView.addSubview(view)
         view.sizeToFit()
         leftViewSize = view.frame.size
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
         leftView.addConstraints([
             Constraint.new(view, .CenterX, to: leftView, .CenterX),
             Constraint.new(view, .CenterY, to: leftView, .CenterY)
@@ -189,14 +185,13 @@ public class GrowingTextBar: UIView {
     }
     
     public func addSubviewToRightView(view: UIView, alwaysShow: Bool) {
-        
         rightView.subviews.forEach({ $0.removeFromSuperview() })
-        
-        view.translatesAutoresizingMaskIntoConstraints = false
         
         rightView.addSubview(view)
         view.sizeToFit()
         rightViewSize = view.frame.size
+        
+        view.translatesAutoresizingMaskIntoConstraints = false
         rightView.addConstraints([
             Constraint.new(view, .CenterX, to: rightView, .CenterX),
             Constraint.new(view, .CenterY, to: rightView, .CenterY)
@@ -207,7 +202,6 @@ public class GrowingTextBar: UIView {
     }
     
     public func updateLayout(duration duration: NSTimeInterval?) {
-        
         if let duration = duration {
             UIView.animateWithDuration(duration, delay: 0, options: .CurveEaseInOut, animations: { [weak self] in
                 self?.setNeedsLayout()
@@ -223,9 +217,8 @@ public class GrowingTextBar: UIView {
     // MARK: Private Method
     
     private func configureViews() {
-        
         textView = GrowingTextView()
-        textView.textViewDelegate = self
+        textView._textViewDelegate = self
         addSubview(textView)
         
         leftView = UIView()
@@ -242,11 +235,7 @@ public class GrowingTextBar: UIView {
         
         leftViewWidthConstraint = Constraint.new(leftView, .Width, to: nil, .Width, constant: leftViewSize.width)
         rightViewWidthConstraint = Constraint.new(rightView, .Width, to: nil, .Width, constant: 0)
-        
-        addConstraints([
-            leftViewWidthConstraint,
-            rightViewWidthConstraint,
-            ])
+        addConstraints([leftViewWidthConstraint, rightViewWidthConstraint])
         
         addConstraints(Constraint.new(visualFormats: [
             "V:|-7-[textView]-7-|",
@@ -255,16 +244,14 @@ public class GrowingTextBar: UIView {
             "|-4-[leftView]-4-[textView]-4-[rightView]-4-|",
             ], views: ["textView" : textView, "leftView" : leftView, "rightView" : rightView]))
     }
-    
 }
 
 
 // MARK: - :GrowingTextViewDelegate -
 
-extension GrowingTextBar: GrowingTextViewDelegate {
+extension GrowingTextBar: _GrowingTextViewDelegate {
     
     public func textViewHeightChanged(textView: GrowingTextView, newHeight: CGFloat) {
-        
         guard let defaultHeight = defaultHeight else { return }
         let padding = defaultHeight - textView.minimumHeight
         let height = padding + newHeight
@@ -272,7 +259,6 @@ extension GrowingTextBar: GrowingTextViewDelegate {
     }
     
     public func textViewDidChange(textView: GrowingTextView) {
-        
         rightViewHidden = textView.text.isEmpty
         updateLayout(duration: 0.2)
     }

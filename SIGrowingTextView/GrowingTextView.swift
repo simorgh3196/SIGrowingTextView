@@ -57,6 +57,11 @@ public protocol GrowingTextViewDelegate: NSObjectProtocol {
     optional func textViewShouldReturn(textView: GrowingTextView) -> Bool
 }
 
+protocol _GrowingTextViewDelegate: class {
+    func textViewHeightChanged(textView: GrowingTextView, newHeight: CGFloat)
+    func textViewDidChange(textView: GrowingTextView)
+}
+
 
 // MARK: - GrowingTextView -
 
@@ -100,6 +105,7 @@ public class GrowingTextView: UITextView {
     }
     
     public weak var textViewDelegate: GrowingTextViewDelegate?
+    internal weak var _textViewDelegate: _GrowingTextViewDelegate?
     private var expectedHeight: CGFloat = 0
     public var minimumHeight: CGFloat {
         get {
@@ -165,7 +171,6 @@ public class GrowingTextView: UITextView {
     // MARK: Method
     
     private func updateSize() {
-        
         var maxHeight = CGFloat.max
         
         if maxNumberOfLines > 0 {
@@ -186,6 +191,7 @@ public class GrowingTextView: UITextView {
         }
         
         textViewDelegate?.textViewHeightChanged?(self, newHeight: expectedHeight)
+        _textViewDelegate?.textViewHeightChanged(self, newHeight: expectedHeight)
     }
     
     private func roundHeight() -> CGFloat {
@@ -246,6 +252,7 @@ extension GrowingTextView: UITextViewDelegate {
         updateSize()
         updatePlaceholderHideState()
         textViewDelegate?.textViewDidChange?(self)
+        _textViewDelegate?.textViewDidChange(self)
     }
     
     public func textViewDidChangeSelection(textView: UITextView) {

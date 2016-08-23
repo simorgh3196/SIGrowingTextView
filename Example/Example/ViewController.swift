@@ -30,29 +30,14 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var growingTextBar: GrowingTextBar!
     @IBOutlet weak var growingViewBottomConstraint: NSLayoutConstraint!
-    private var growingTextBar2: GrowingTextBar!
-    private var growingViewBottomConstraint2: NSLayoutConstraint!
     private let keyboard = KeyboardObserver()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        growingTextBar2 = GrowingTextBar()
-        view.addSubview(growingTextBar2)
-        
-        print("---", Constraint.new(growingTextBar2, .Height, to: nil, .Height, constant: 44), "---")
-        growingTextBar2.translatesAutoresizingMaskIntoConstraints = false
-        growingTextBar2.addConstraint(Constraint.new(growingTextBar2, .Height, to: nil, .Height, constant: 44))
-        view.addConstraints([
-            Constraint.new(growingTextBar2, .Bottom, to: bottomLayoutGuide, .Top, constant: -250),
-            Constraint.new(view, .Left, to: growingTextBar2, .Left),
-            Constraint.new(view, .Right, to: growingTextBar2, .Right),
-            ])
-        
         let leftButton = UIButton(type: .ContactAdd)
         leftButton.addTarget(self, action: #selector(tappedButton(_:)), forControlEvents: .TouchUpInside)
-//        growingTextBar.addSubviewToLeftView(leftButton)
-        growingTextBar2.addSubviewToLeftView(leftButton)
+        growingTextBar.addSubviewToLeftView(leftButton)
         
         let rightButton = UIButton(type: .System)
         rightButton.setTitle("Send", forState: .Normal)
@@ -61,10 +46,9 @@ class ViewController: UIViewController {
         rightButton.layer.cornerRadius = 3
         rightButton.contentEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
         rightButton.addTarget(self, action: #selector(tappedButton(_:)), forControlEvents: .TouchUpInside)
-//        growingTextBar.addSubviewToRightView(rightButton, alwaysShow: true)
-        growingTextBar2.addSubviewToRightView(rightButton, alwaysShow: true)
+        growingTextBar.addSubviewToRightView(rightButton, alwaysShow: true)
         
-        keyboard.observe { [weak self] (event) -> Void in
+        keyboard.observe { [weak self] event in
             guard let s = self else { return }
             switch event.type {
             case .WillShow, .WillHide, .WillChangeFrame:
@@ -73,21 +57,32 @@ class ViewController: UIViewController {
                 self?.growingViewBottomConstraint.constant = bottom
                 
                 UIView.animateWithDuration(event.duration, delay: 0.0, options: event.options, animations: {
-                    self?.view.layoutIfNeeded()
-                    self?.view.updateConstraints()
+                    s.view.layoutIfNeeded()
+                    s.view.updateConstraints()
                     } , completion: nil)
             default:
                 break
             }
         }
+        
+        let button = UIButton(frame: CGRect(x: 100, y: 100, width: 200, height: 100))
+        button.titleLabel?.text = "addText"
+        button.titleLabel?.textColor = UIColor.blueColor()
+        button.tintColor = UIColor.blueColor()
+        button.addTarget(self, action: #selector(tappedCenterButton(_:)), forControlEvents: .TouchUpInside)
+        view.addSubview(button)
     }
 
     func tappedButton(sender: UIButton) {
         print(#function)
         
-        growingTextBar2.text = ""
-        growingTextBar2.rightViewHidden = true
-        growingTextBar2.endEditing(true)
+        growingTextBar.text = ""
+        growingTextBar.endEditing(true)
+    }
+    
+    func tappedCenterButton(sender: UIButton) {
+        growingTextBar.text = "hoge"
+        growingTextBar.textView.becomeFirstResponder()
     }
     
 }
